@@ -6,7 +6,7 @@ export function run(command, args, options = {}) {
   const result = spawnSync(command, args, {
     cwd: options.cwd ?? process.cwd(),
     env: { ...process.env, ...(options.env ?? {}) },
-    stdio: "inherit",
+    stdio: options.stdio ?? "inherit",
     shell: false,
   });
   if (result.error) {

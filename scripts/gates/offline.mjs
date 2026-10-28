@@ -4,9 +4,10 @@ import process from "node:process";
 try {
   // Prove dependency resolution and library tests do not need the network.
   run("cargo", ["metadata", "--locked", "--offline", "--format-version", "1"], {
+    stdio: "ignore",
     env: { CARGO_NET_OFFLINE: "true" },
   });
-  run("cargo", ["test", "--locked", "--offline", "--workspace", "--lib"], {
+  run("cargo", ["test", "--quiet", "--locked", "--offline", "--workspace", "--lib"], {
     env: { CARGO_NET_OFFLINE: "true" },
   });
   // The full workflow uses only loopback. Force any accidental external HTTP
