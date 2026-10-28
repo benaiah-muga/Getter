@@ -13,8 +13,9 @@ The binary is `getter`, version `0.1.0`. This page reflects the actual
 `--home` and `--json` are global (Clap `global = true`), so they may appear
 before or after the subcommand. Examples put them before the command.
 
-Exit status is `0` on success and `1` on an error or a doctor failure. The CLI
-prints errors to stderr and logs to stderr; normal tables/JSON go to stdout.
+Exit status is `0` on success, `1` for runtime/application errors (including a
+doctor failure), and `2` for command-line usage or parse errors from Clap. The
+CLI prints errors and logs to stderr; normal tables/JSON go to stdout.
 
 ## `getter init`
 
@@ -261,8 +262,9 @@ Read-only diagnostics for the home:
 - pinned CA and coordinator health (worker).
 
 It prints `[ok]`, `[warn]`, and `[fail]` lines and a summary. It exits 1 on
-blocking failures; warnings alone do not fail. `--json` is a global option but
-`doctor` currently prints its human diagnostic format.
+blocking failures; warnings alone do not fail. `doctor` does not support
+`--json`: using it exits with an explanatory error rather than mixing human and
+JSON output.
 
 ```sh
 getter --home ./.getter-coord doctor

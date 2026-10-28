@@ -186,7 +186,16 @@ getter --json --home ~/.getter pair \
 
 Transfer that file (or the token and fingerprint separately) to the worker host
 over a trusted channel. The token is a one-time secret and is scoped to the name.
-The default TTL is 900 seconds; allowed values are 60–86400 seconds.
+The default TTL is 900 seconds; allowed values are 60–86400 seconds. The JSON
+file contains the token; extract the raw token into a separate `0600` file for
+`--token-file` so the JSON is not passed as the secret value:
+
+```sh
+# On the worker host, after transferring /tmp/lab-worker-a-pair.json:
+umask 077
+jq -r .token /tmp/lab-worker-a-pair.json > /tmp/lab-worker-a-token
+chmod 600 /tmp/lab-worker-a-token
+```
 
 On the worker host:
 
@@ -211,8 +220,12 @@ getter --home ~/.getter init \
 getter --home ~/.getter worker join \
   --coordinator https://192.168.1.10:47810 \
   --token-file /tmp/lab-worker-a-token \
-  --ca-fingerprint 'sha256:...'
+  --ca-fingerprint "$(jq -r .ca_fingerprint /tmp/lab-worker-a-pair.json)"
 ```
+
+`jq` is only a documentation convenience for extracting fields; any trusted JSON
+tool works. The examples below that use `jq` assume it is installed. Delete both
+temporary files after successful enrollment.
 
 For option B, `join` fetches the CA over an unverified bootstrap connection but
 refuses to save or use it unless its SHA-256 matches the out-of-band fingerprint.
