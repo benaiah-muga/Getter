@@ -26,7 +26,7 @@ jobs:
           fetch-depth: 0
       - uses: dtolnay/rust-toolchain@master
         with:
-          toolchain: 1.91.0
+          toolchain: 1.97.0
           components: rustfmt, clippy
           targets: wasm32-unknown-unknown
       - uses: Swatinem/rust-cache@v2
@@ -41,6 +41,7 @@ jobs:
         run: cargo build --locked --release -p getter-cli
       - name: Build and verify the reference workload
         run: |
+          cargo test --locked --manifest-path examples/sum-squares/Cargo.toml
           ./scripts/build-example.sh
           python3 examples/sum-squares/generate_job.py --out /tmp/getter-example-job.json
           python3 - <<'PY'

@@ -22,7 +22,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@master
         with:
-          toolchain: 1.91.0
+          toolchain: 1.97.0
           components: rustfmt, clippy
           targets: wasm32-unknown-unknown
       - uses: Swatinem/rust-cache@v2
@@ -34,8 +34,9 @@ jobs:
         run: cargo clippy --locked --workspace --all-targets -- -D warnings
       - name: Workspace tests
         run: cargo test --locked --workspace --all-targets
-      - name: Workload build and trusted reference generation
+      - name: Workload tests, build, and trusted reference generation
         run: |
+          cargo test --locked --manifest-path examples/sum-squares/Cargo.toml
           ./scripts/build-example.sh
           python3 examples/sum-squares/generate_job.py --out /tmp/getter-example-job.json
           python3 - <<'PY'
@@ -56,7 +57,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@master
         with:
-          toolchain: 1.91.0
+          toolchain: 1.97.0
           components: rustfmt, clippy
       - uses: Swatinem/rust-cache@v2
         with:
@@ -74,7 +75,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@master
         with:
-          toolchain: 1.91.0
+          toolchain: 1.97.0
       - uses: taiki-e/install-action@v2
         with:
           tool: cargo-audit
