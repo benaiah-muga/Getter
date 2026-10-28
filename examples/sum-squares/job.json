@@ -5,7 +5,7 @@
   "workload": {
     "name": "sum-of-squares",
     "abi": "getter.abi.v1",
-    "sha256": "73bd35d33ba5047a32416f5049905df38ca5e008eef67333ca05a00775aa13e1",
+    "sha256": "853269c113a222f5229bd5ce245ebe668d1c2978dc047554d8748e9e2246930e",
     "artifact": "sum_squares.wasm"
   },
   "tasks": [
@@ -73,9 +73,9 @@
   "requirements": {
     "cpu_slots": 1,
     "memory_bytes": 67108864,
-    "timeout_secs": 10,
     "output_bytes": 1048576,
-    "fuel": 5000000000
+    "fuel": 5000000000,
+    "timeout_secs": 10
   },
   "verification": {
     "mode": "exact_sha256"

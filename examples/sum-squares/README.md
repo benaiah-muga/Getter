@@ -54,10 +54,10 @@ cargo build --manifest-path examples/sum-squares/Cargo.toml \
   --target wasm32-unknown-unknown --release
 ```
 
-The repository artifact is `sum_squares.wasm`, 23,828 bytes:
+The repository artifact is `sum_squares.wasm`, 22,651 bytes:
 
 ```text
-sha256 73bd35d33ba5047a32416f5049905df38ca5e008eef67333ca05a00775aa13e1
+sha256 853269c113a222f5229bd5ce245ebe668d1c2978dc047554d8748e9e2246930e
 ```
 
 The checked-in `.wasm` is the built artifact of the source in this directory;
