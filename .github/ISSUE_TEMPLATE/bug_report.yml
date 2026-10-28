@@ -97,7 +97,7 @@ body:
     attributes:
       label: Environment
       description: OS, architecture, Rust version, filesystem, service manager, and worker count.
-      placeholder: "Ubuntu 24.04 x86_64, Rust 1.91.0, systemd user service, 2 workers"
+      placeholder: "Ubuntu 24.04 x86_64, Rust 1.97.0, systemd user service, 2 workers"
     validations:
       required: true
 

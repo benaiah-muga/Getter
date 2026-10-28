@@ -6,16 +6,17 @@ page records the commands, what they cover, and what is **not** verified.
 ## Status
 
 - Unit and integration tests live in the Rust crates and the example; their
-  coverage is summarized below. This revision does not claim a final test result
-  in this environment.
-- The command-line interface and configuration are covered by tests and the E2E
-  harness.
+  coverage is summarized below. Format, clippy, the full workspace test suite,
+  the documentation gate, the offline gate, and the local E2E passed on the
+  development host. No GitHub Actions run is claimed for this snapshot.
+- Configuration and domain rules are covered by unit tests. CLI behavior is
+  exercised through the E2E harness; there is no dedicated CLI unit-test suite.
 - `.github/workflows/ci.yml` and `.github/workflows/release.yml` are checked in.
   A green workflow run for the exact commit is the evidence that matters; this
   snapshot does not claim one.
 - `scripts/e2e-local.sh` implements the full kill/restart recovery sequence and
-  is invoked by the CI `e2e` job. Its recovery phase is still being finalized in
-  this delivery, so no passing `GETTER_E2E_PASS` run is claimed here.
+  is invoked by the CI `e2e` job. It printed `GETTER_E2E_PASS` on the development
+  host; no GitHub Actions run is claimed for this snapshot.
 - Physical separate-machine LAN operation is **not tested** here.
 - An independent pre-release security review was completed and critical/high
   findings were addressed; this is not an external third-party audit report.
@@ -46,7 +47,7 @@ cargo test --manifest-path examples/sum-squares/Cargo.toml
 Useful additions when the tools are installed:
 
 ```sh
-cargo audit --deny warnings   # if cargo-audit is installed
+cargo audit                    # if cargo-audit is installed
 cargo deny check              # if configured; no deny.toml is checked in
 ```
 
@@ -61,11 +62,11 @@ cargo deny check              # if configured; no deny.toml is checked in
 | Storage | Migrations, schema version, enrollment token single-use/name/expiry, revocation, heartbeats, claims, retries, infrastructure requeues, duplicate results, stale results, lease expiry, cancellation, aggregation |
 | Scheduler/states | Local limits override remote requests, paused workers get no tasks, slot accounting, guard transitions, retry ceilings |
 | Validation | Manifest limits, duplicate IDs, unsafe names, required trusted hashes, artifact digest/magic, output verification, `json_sum` overflow, previews |
-| Coordinator | Router/admin/worker auth, public endpoints, job submission/inspection/cancel, status, contribution, body limits |
-| Worker | Client signing/retries, pause/battery flags, state accounting, join/trust failure paths |
+| Coordinator | In-process router tests for admin/worker authentication, enrollment single use, replay rejection, revocation, public endpoints, and protected admin routes. Job submission/inspection/cancel and status/contribution are exercised through the E2E harness. |
+| Worker | Pause/battery flags, cancellation flags, cancellation acknowledgements, capability-sync gating, active-slot accounting, local-limit refusal, and heartbeat construction unit tests. Signed client calls, enrollment/trust, pause control, and execution are exercised through the E2E harness. |
 | SDK/example | Output packing, allocation, zero-length input, null-pointer guard, exact bytes, checked overflow, reference hashes |
-| CLI | Init/pair/join/config/status behavior where covered by crate and integration tests |
-| E2E | Separate processes over TLS, two workers, real workload, unauthorized enrollment, pause/kill/restart recovery, CLI verification |
+| CLI | Exercised end-to-end for init, pair, join, coordinator start, worker start/status/pause/resume, jobs submit/inspect, workers, contribute, doctor, and status. There is no dedicated CLI unit-test suite. |
+| E2E | Separate processes over TLS, two workers, real workload, unauthorized enrollment, pause control, worker SIGKILL + lease-expiry retry, coordinator crash/restart, aggregate verification, and CLI assertions |
 
 Tests do not prove absence of vulnerabilities, Wasmtime correctness, or behavior
 on untested platforms. See [Security](security.md) for the threat model.
@@ -94,7 +95,7 @@ $GETTER --home ./.getter-coord contribute
 Expected on success: `completed` job, 12/12 tasks `verified`, aggregate
 `{"total":"575999928000002000000"}`, and two distinct worker names in task rows.
 The checked-in artifact is
-`sha256:73bd35d33ba5047a32416f5049905df38ca5e008eef67333ca05a00775aa13e1`.
+`sha256:853269c113a222f5229bd5ce245ebe668d1c2978dc047554d8748e9e2246930e`.
 
 ## Full local harness
 
@@ -131,9 +132,8 @@ Prerequisites: bash, Python 3, and a built binary. The script:
     coordinator_restarts=1 verification=exact_sha256` on success.
 
 The script uses loopback TLS only. It does not configure a physical LAN, does
-not run a security audit, and does not prove Wasm sandbox correctness. The
-recovery phase is still being finalized; treat the script as the intended
-harness and record its actual output rather than assuming a pass.
+not run a security audit, and does not prove Wasm sandbox correctness. Record the
+actual output for the commit you test rather than assuming a future pass.
 
 Environment options:
 
@@ -149,7 +149,7 @@ It uses real processes, real TLS, real SQLite, and the real Wasm artifact.
 
 ```sh
 sha256sum examples/sum-squares/sum_squares.wasm
-# 73bd35d33ba5047a32416f5049905df38ca5e008eef67333ca05a00775aa13e1
+# 853269c113a222f5229bd5ce245ebe668d1c2978dc047554d8748e9e2246930e
 ```
 
 Rebuild and regenerate — do not hand-edit the hash:
@@ -172,10 +172,11 @@ The checked-in `.github/workflows/ci.yml` has four jobs:
 
 - **quality:** `cargo fmt --all -- --check`,
   `cargo clippy --locked --workspace --all-targets -- -D warnings`,
-  `cargo test --locked --workspace --all-targets`, example Wasm build,
-  independent job generation, and expected aggregate assertion.
+  `cargo test --locked --workspace --all-targets`, example host tests,
+  example Wasm build, independent job generation, and expected aggregate
+  assertion.
 - **e2e:** release binary build and `GETTER_BIN=... bash scripts/e2e-local.sh`.
-- **dependency-audit:** `cargo audit --deny warnings`.
+- **dependency-audit:** `cargo audit`.
 - **docs:** `node scripts/gates/docs.mjs`.
 
 On a Linux runner the example steps are:
@@ -187,12 +188,13 @@ python3 examples/sum-squares/generate_job.py --out /tmp/getter-example-job.json
 cargo test --manifest-path examples/sum-squares/Cargo.toml
 ```
 
-`cargo audit --deny warnings` is part of the checked-in CI `dependency-audit`
-job. `cargo deny` is not configured (`deny.toml` is absent). Run the audit
-locally before a release:
+`cargo audit` is part of the checked-in CI `dependency-audit` job and currently
+reports zero known vulnerabilities and one unmaintained-package warning. `cargo
+deny` is not configured (`deny.toml` is absent). Run the audit locally before a
+release:
 
 ```sh
-cargo audit --deny warnings
+cargo audit
 ```
 
 The CI `docs` job runs `node scripts/gates/docs.mjs`, which checks required

@@ -60,7 +60,7 @@ Relevant limits:
 - artifact ≤16 MiB, total declared inputs ≤16 MiB, per-result ≤1 MiB, total
   declared task output limits ≤64 MiB, per-task output ≤1 MiB;
 - worker concurrency ≤128, per-task memory ≥1 MiB, per-task output ≤1 MiB;
-- per-worker signed-request guard: 1,200 requests per 60 s, 4,096 nonces per
+- per-worker signed-request guard: 76,800 requests per 60 s, 262,144 nonces per
   worker, 100,000 tracked workers;
 - infrastructure requeues: at most 32 abandoned leases per task.
 
@@ -148,7 +148,7 @@ CPU/Wasmtime, or a compromised Rust/Wasmtime toolchain.
 | Threat | Controls | Residual risk |
 | --- | --- | --- |
 | Forged worker request | Ed25519 signature over worker ID, method, exact path/query, Unix seconds, nonce, body hash; key from enrollment | Stolen private key = valid signer until revoked |
-| Replay | ±90 s clock window; 180 s nonce TTL; 4,096 nonces/worker; 1,200 requests/60 s/worker | **Process-local**: restart clears replay/rate state; captured traffic may replay within the window if still useful |
+| Replay | ±90 s clock window; 180 s nonce TTL; 262,144 nonces/worker; 76,800 requests/60 s/worker | **Process-local**: restart clears replay/rate state; captured traffic may replay within the window if still useful |
 | Nonce-cache exhaustion / noisy worker | Per-worker nonce and rate namespaces; 100,000 tracked workers; 429 for rate, 503 for capacity | 429/503 are transient, not deauthorization; no global/admin rate limit |
 | Clock manipulation | 90-second window; UTC timestamps | Wildly wrong clocks fail with 401; no secure time source inside Getter |
 | Cross-worker lease use | Lease hash bound to worker/lease/task; constant-time compare; owner/expiry checks on start/result/artifact | Stolen worker key can act within its own assignments |

@@ -52,7 +52,7 @@ flowchart LR
         WCTL["Loopback control API\nbearer token"]
         POLL["Assignment poller\noutbound HTTPS"]
         LOCAL["Local limit checks\nconcurrency, memory, time, output, fuel"]
-        SBX["Wasmtime 43 sandbox\nzero imports"]
+        SBX["Wasmtime 49.0.4 sandbox\nzero imports"]
         STATE["Process state\nactive leases, pause flags, stats"]
     end
 

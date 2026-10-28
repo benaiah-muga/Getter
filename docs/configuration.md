@@ -146,7 +146,7 @@ Discovery is unauthenticated and grants no trust. See
 | `max_artifact_bytes` | `16777216` (16 MiB) | 1–16 MiB. The runtime/worker module ceiling is 16 MiB |
 | `max_total_input_bytes` | `16777216` (16 MiB) | 1–16 MiB, summed over task input strings |
 | `max_total_output_bytes` | `67108864` (64 MiB) | Sum of declared task `output_bytes`; must be ≥ `max_result_bytes`, ≤64 MiB |
-| `max_http_body_bytes` | `50331648` (48 MiB) | Global request body cap. Must be ≥ encoded artifact + total inputs + 1 MiB and ≤64 MiB |
+| `max_http_body_bytes` | `50331648` (48 MiB) | Global request body cap. Must be ≥ encoded **maximum** artifact + maximum total inputs + 1 MiB and ≤64 MiB |
 | `max_result_bytes` | `1048576` (1 MiB) | Coordinator result acceptance cap; 1–1 MiB. Per-task `output_bytes` is independently ≤1 MiB |
 | `allow_trusted_verification` | `false` | Permit `verification.mode = "trusted"` jobs. Development only; results are unverified |
 | `heartbeat_timeout_secs` | `20` | 5–600; workers older than this are offline. Also bounds scheduler liveness |

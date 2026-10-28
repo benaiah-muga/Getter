@@ -74,8 +74,8 @@ Notes:
 - The timestamp is checked against coordinator clock time with a ±90 s window.
 - Nonces are cached per worker for 180 s; reuse is rejected with 401. The
   in-memory guard is **process-local**, so it resets on coordinator restart. In
-  the current build it enforces 1,200 signed requests per 60 s per worker, up to
-  4,096 nonces per worker, and up to 100,000 tracked workers. Exceeding the rate
+  the current build it enforces 76,800 signed requests per 60 s per worker, up to
+  262,144 nonces per worker, and up to 100,000 tracked workers. Exceeding the rate
   window returns 429 `rate_limited`; exhausting guard capacity returns 503
   `replay_guard_capacity`. These limits are not configurable in `0.1.0`.
 - The verifying key is the base64 Ed25519 public key stored at enrollment.
@@ -519,7 +519,7 @@ Defaults and protocol ceilings:
 | Max attempts | 1–10 (CLI/example default 3); infrastructure requeues do not consume attempts |
 | Infrastructure requeues per task | 32 abandoned leases; a further requeue fails the task |
 | Fuel | 1–100,000,000,000 |
-| Coordinator HTTP body config | Must be at least encoded artifact + total inputs + 1 MiB, at most 64 MiB |
+| Coordinator HTTP body config | Must be at least encoded maximum artifact + maximum total inputs + 1 MiB, at most 64 MiB |
 
 The coordinator can be configured below these ceilings. A remote job cannot
 raise a worker's local maxima. See [Configuration](configuration.md).

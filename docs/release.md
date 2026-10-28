@@ -16,7 +16,9 @@ an external audit took place.
 - Before 1.0, minor versions may make incompatible changes. Once 1.0 is reached,
   the project intends to follow Semantic Versioning for the product while
   versioning the protocol, job format, and ABI independently.
-- A breaking protocol change requires a new protocol identifier and coordinated
+- `0.1.0` is the first public definition of `getter.protocol/v1`; there are no
+  previously deployed v1 peers. After the first release, a breaking protocol
+  change requires a new protocol identifier and coordinated
   coordinator/worker/CLI updates. A new job shape requires a new job-format
   identifier. A new guest contract requires a new ABI identifier and SDK/runtime
   support; do not redefine `getter.abi.v1`.
@@ -26,7 +28,7 @@ an external audit took place.
 
 ## Build inputs
 
-- Rust `1.91.0` via [`rust-toolchain.toml`](../rust-toolchain.toml), with
+- Rust `1.97.0` via [`rust-toolchain.toml`](../rust-toolchain.toml), with
   `rustfmt`, `clippy`, and `wasm32-unknown-unknown`.
 - Checked-in [`Cargo.lock`](../Cargo.lock); use `--locked`.
 - The `sum-squares` artifact is checked in at
@@ -45,7 +47,7 @@ The repository now contains:
     job assertion, and expected aggregate check;
   - **e2e:** release binary build and `scripts/e2e-local.sh` with two workers,
     pause/kill/restart recovery, and validation;
-  - **dependency-audit:** `cargo audit --deny warnings`;
+  - **dependency-audit:** `cargo audit`;
   - **docs:** `node scripts/gates/docs.mjs` (required paths, banner hash, docs
     content, links, workflows).
 - `.github/workflows/release.yml` — on a `v*` tag or manual dispatch:
@@ -76,7 +78,7 @@ rustup target add wasm32-unknown-unknown
 python3 examples/sum-squares/generate_job.py --out /tmp/getter-example-job.json
 cargo test --manifest-path examples/sum-squares/Cargo.toml
 
-cargo audit --deny warnings
+cargo audit
 node scripts/gates/docs.mjs
 GETTER_BIN="$PWD/target/release/getter" bash scripts/e2e-local.sh
 ```

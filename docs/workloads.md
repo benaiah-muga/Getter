@@ -120,10 +120,10 @@ cargo build --manifest-path examples/sum-squares/Cargo.toml \
   --target wasm32-unknown-unknown --release
 ```
 
-The repository artifact is 23,828 bytes:
+The repository artifact is 22,651 bytes:
 
 ```text
-sha256 73bd35d33ba5047a32416f5049905df38ca5e008eef67333ca05a00775aa13e1
+sha256 853269c113a222f5229bd5ce245ebe668d1c2978dc047554d8748e9e2246930e
 ```
 
 A rebuild may change the bytes across toolchain/linker/profile changes. If the
@@ -141,7 +141,7 @@ A job file is JSON with `deny_unknown_fields`. The checked-in example:
   "workload": {
     "name": "sum-of-squares",
     "abi": "getter.abi.v1",
-    "sha256": "73bd35d33ba5047a32416f5049905df38ca5e008eef67333ca05a00775aa13e1",
+    "sha256": "853269c113a222f5229bd5ce245ebe668d1c2978dc047554d8748e9e2246930e",
     "artifact": "sum_squares.wasm"
   },
   "tasks": [

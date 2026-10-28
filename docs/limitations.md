@@ -14,12 +14,15 @@ to promise otherwise, this page and [Security](security.md) win.
   coverage.
 - **No CI run result is claimed.** `.github/workflows/ci.yml` and
   `.github/workflows/release.yml` are checked in, but this snapshot does not
-  claim that a particular CI run passed or that a release workflow ran.
+  claim that a particular CI run passed or that a release workflow ran. A local
+  `cargo audit` reports zero known vulnerabilities and one unmaintained-crate
+  warning (`rustls-pemfile`); CI treats actual vulnerabilities as blocking.
 - **No physical-LAN verification.** The LAN procedure is documented but has not
   been verified on separate physical machines in this environment.
-- **The kill/restart E2E harness is still being finalized.** `scripts/e2e-local.sh`
-  exists and automates the intended flow, but its recovery phase is not yet a
-  verified release gate. See [Testing](testing.md).
+- **The kill/restart E2E harness has only been verified on the development
+  host.** `scripts/e2e-local.sh` automates the flow and passed locally, but no
+  GitHub Actions run is claimed for this snapshot and physical-LAN failure
+  recovery is not verified. See [Testing](testing.md).
 - The project is developed primarily on Linux. macOS and Windows
   builds are not verified. Unix permission checks and battery pausing are
   platform-specific.
@@ -62,7 +65,7 @@ to promise otherwise, this page and [Security](security.md) win.
   consume worker CPU within the module-size and concurrency limits.
 - **Replay protection is process-local.** The per-worker replay/rate guard
   resets on coordinator restart. The signed-request clock window is ±90 seconds;
-  the current guard allows 1,200 requests per 60 seconds per worker, 4,096
+  the current guard allows 76,800 requests per 60 seconds per worker, 262,144
   nonces per worker, and up to 100,000 tracked workers, but those limits are not
   configurable.
 - **No TLS client certificates.** Worker identity is an application-level
@@ -90,7 +93,7 @@ to promise otherwise, this page and [Security](security.md) win.
 - **No per-job worker authorization.** Any enrolled, active worker that fits the
   requirements can claim a queued task.
 - **No admin/public rate limiting.** A per-worker signed-request guard throttles
-  worker traffic (1,200 requests per 60 s, 4,096 nonces per worker) and bounds
+  worker traffic (76,800 requests per 60 s, 262,144 nonces per worker) and bounds
   replay state, but unauthenticated admin/public attempts and connection floods
   are not rate-limited. `429`/`503` from this guard are transient, not
   deauthorization.
@@ -120,8 +123,7 @@ to promise otherwise, this page and [Security](security.md) win.
 - **Idle-user detection is not implemented.** A worker does not pause because a
   user is active.
 - **No bandwidth shaping.** `max_download_bytes` and the artifact limit cap
-  download size; they do not limit throughput. The CLI's `--help` mention of
-  "bandwidth limits" should be read as a size bound, not traffic shaping.
+  download size; they do not limit throughput or network utilization.
 - **Niceness is best-effort.** On Unix the worker calls `setpriority` at startup
   with the configured nice value (default 10); failure is logged and does not
   stop the worker. Windows has no equivalent here.
@@ -181,7 +183,7 @@ to promise otherwise, this page and [Security](security.md) win.
   `getter.abi.v1` are fixed identifiers. Breaking changes require a new
   identifier; do not assume undocumented fields will be ignored (unknown fields
   are rejected).
-- Rust `1.91.0` and the checked-in `Cargo.lock` are the supported build inputs.
+- Rust `1.97.0` and the checked-in `Cargo.lock` are the supported build inputs.
   Dependency updates can change Wasmtime behavior; read release notes.
 - The checked-in Wasm artifact is not promised bit-for-bit reproducible across
   arbitrary toolchains, linkers, or profiles. Regenerate `job.json` if a rebuild

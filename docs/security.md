@@ -112,7 +112,7 @@ another worker's lease.
 | --- | --- | --- |
 | Forged worker request | Ed25519 signature covers worker ID, method, exact path/query, Unix timestamp, nonce, SHA-256 of body; verifying key from enrolled worker | Stolen private key = valid signer until revocation |
 | Worker requeues repeatedly | Infrastructure requeue does not consume a workload attempt, but is capped at 32 abandoned leases per task; a requeue that would exceed the cap fails the task | A malicious or pathological worker can delay a task up to that bound; there is no per-worker reputation/fair-share |
-| Replayed signed request | ±90 s timestamp window; per-worker nonce TTL (180 s); bounded per-worker guard with a 1,200 requests/60 s ceiling, 4,096 nonces/worker, and 100,000 tracked workers; 401 is an auth failure, while 429/503 are transient throttling/capacity and must not de-authorize a worker; body re-read and signature checked before handler | **Process-local guard.** Restart clears replay state and rate counters; a captured request can be replayed within the window if still useful. Limits are not configurable |
+| Replayed signed request | ±90 s timestamp window; per-worker nonce TTL (180 s); bounded per-worker guard with a 76,800 requests/60 s ceiling, 262,144 nonces/worker, and 100,000 tracked workers; 401 is an auth failure, while 429/503 are transient throttling/capacity and must not de-authorize a worker; body re-read and signature checked before handler | **Process-local guard.** Restart clears replay state and rate counters; a captured request can be replayed within the window if still useful. Limits are not configurable |
 | Clock manipulation | ±90 s window; UTC timestamps | A host with a wildly wrong clock fails closed with 401; no secure time source inside Getter |
 | Cross-worker lease use | Lease token hash bound to worker ID, lease, task; constant-time comparison; result/start/artifact validate ownership and expiry | A compromised worker with its own lease can only affect its own assignment |
 | Stale result accepted | Lease must be active and unexpired at acceptance; cancelled jobs rejected; task state must be assigned/running | Race between expiry and result acceptance is resolved inside one immediate transaction |
@@ -168,7 +168,7 @@ another worker's lease.
 
 | Threat | Mitigation | Residual risk |
 | --- | --- | --- |
-| Malicious/compromised dependency | Lockfile, pinned toolchain, minimal feature sets, review policy | No `cargo-audit`/`cargo-deny` gate yet; upstream compromise is possible |
+| Malicious/compromised dependency | Lockfile, pinned Rust 1.97 toolchain, Wasmtime 49.0.4 with current advisory fixes, minimal features, read-only CI dependency audit (`cargo audit`; zero known vulnerabilities, one unmaintained-package warning at the time of writing) | No `cargo-deny` policy, reproducible builds, SBOM, or secret scanning yet; upstream compromise is possible |
 | Compromised coordinator host | Trust boundary; file permissions; backup | Full state/admin access; no remote attestation or HSM |
 | Compromised worker host | Revocation; lease output verification; per-worker identity | Can read assigned inputs, refuse work, or return wrong outputs that should fail hashes; can consume resources within limits |
 | Same-user local attacker | None; same-user can read `0600` files | Expected OS boundary; use a dedicated account and host hardening |

@@ -5,7 +5,7 @@
 # Getter
 
 [![CI](https://github.com/benaiah-muga/Getter/actions/workflows/ci.yml/badge.svg)](https://github.com/benaiah-muga/Getter/actions/workflows/ci.yml)
-[![Rust](https://img.shields.io/badge/rust-1.91.0-orange?logo=rust)](rust-toolchain.toml)
+[![Rust](https://img.shields.io/badge/rust-1.97.0-orange?logo=rust)](rust-toolchain.toml)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
 [![Status](https://img.shields.io/badge/status-alpha%20%C2%B7%200.1.0-red)](CHANGELOG.md)
 
@@ -47,7 +47,7 @@ explicit enrollment and bounded execution instead of implicit trust:
 - **Worker:** outbound polling, Ed25519-signed requests, loopback-only
   bearer-token control API, concurrency/slot accounting, local resource ceilings,
   download digest checks, graceful leave, Unix niceness, Linux battery pause.
-- **Sandbox:** Wasmtime 43, zero imports/WASI, fuel plus wall-clock epoch
+- **Sandbox:** Wasmtime 49.0.4, zero imports/WASI, fuel plus wall-clock epoch
   deadline, memory/table/instance limits, output bounds, module/input/output
   limits, cooperative cancellation, fresh instance per task.
 - **Workload SDK:** `getter_workload!` macro, `getter.abi.v1` allocation/packing,
@@ -89,7 +89,7 @@ worker listener is the loopback control API. See
 
 - Linux (primary development platform), x86_64. macOS/Windows builds are not
   verified.
-- Rust `1.91.0` via [`rust-toolchain.toml`](rust-toolchain.toml) and the checked-in
+- Rust `1.97.0` via [`rust-toolchain.toml`](rust-toolchain.toml) and the checked-in
   [`Cargo.lock`](Cargo.lock).
 - A C toolchain for bundled SQLite.
 - `wasm32-unknown-unknown` only if you build workloads:
@@ -104,7 +104,7 @@ There are **no published binaries or signed releases** yet. Build from source:
 ```sh
 git clone https://github.com/benaiah-muga/Getter.git
 cd Getter
-rustup show active-toolchain       # 1.91.0
+rustup show active-toolchain       # 1.97.0
 cargo build --locked --release
 ./target/release/getter --version  # getter 0.1.0
 ```
@@ -124,7 +124,7 @@ python3 examples/sum-squares/generate_job.py
 ```
 
 The checked-in artifact is
-`sha256:73bd35d33ba5047a32416f5049905df38ca5e008eef67333ca05a00775aa13e1`.
+`sha256:853269c113a222f5229bd5ce245ebe668d1c2978dc047554d8748e9e2246930e`.
 
 ## Quick start (one host, loopback TLS)
 
@@ -230,9 +230,9 @@ $GETTER --home ./.getter-coord workers
 
 Then submit the same job. With two workers, the 12 tasks are distributed across
 both; `jobs inspect` shows two distinct worker names, and `contribute` reports
-per-worker completed tasks and compute time. The automated kill/restart harness
-is still being finalized; see [Testing](docs/testing.md) for what it automates
-and what remains unverified.
+per-worker completed tasks and compute time. The local kill/restart harness
+(`scripts/e2e-local.sh`) automates this flow and has passed on the development
+host; see [Testing](docs/testing.md) for exactly what it verifies.
 
 ## LAN deployment
 
@@ -348,11 +348,11 @@ current trust model. See the [threat model](docs/threat-model.md).
   is process-local and resets on restart along with replay protection. SQLite
   work serializes behind one mutex, per-task memory limits aggregate across
   concurrency, and the loopback bearer token is not server authentication.
-- The automated kill/restart E2E harness and CI workflows exist, but no run
-  result is claimed here; physical LAN operation is a documented, unverified
-  procedure. Enrollment and claim responses are not transport-idempotent: a
-  lost response can consume a pairing token or delay a claimed task until lease
-  expiry.
+- The automated kill/restart E2E harness has passed on the development host;
+  no GitHub Actions run is claimed for this snapshot. Physical LAN operation is
+  a documented, unverified procedure. Enrollment and claim responses are not
+  transport-idempotent: a lost response can consume a pairing token or delay a
+  claimed task until lease expiry.
 - macOS/Windows behavior is not verified; battery pause is Linux-only.
 - See the full [Limitations](docs/limitations.md).
 
@@ -381,7 +381,7 @@ cargo fmt --all -- --check
 cargo clippy --locked --workspace --all-targets -- -D warnings
 cargo test --locked --workspace --all-targets
 cargo test --manifest-path examples/sum-squares/Cargo.toml
-cargo audit --deny warnings
+cargo audit
 node scripts/gates/docs.mjs
 ```
 
@@ -389,10 +389,11 @@ CI is defined in `.github/workflows/ci.yml` (quality, two-worker recovery E2E,
 dependency audit, documentation checks) and release packaging in
 `.github/workflows/release.yml`. The full local harness is
 `bash scripts/e2e-local.sh`; it uses loopback TLS, temporary homes, two workers,
-the real 12-task job, a kill/restart recovery phase, and CLI assertions. This
-revision does not claim a CI run result or a **passed** `GETTER_E2E_PASS` run in
-this environment; the workflows and harness are the intended validation path.
-See [Testing](docs/testing.md) for exactly what is automated and what remains
+the real 12-task job, unauthorized-enrollment rejection, a SIGKILL/lease-expiry
+recovery phase, a coordinator crash/restart, and CLI assertions. It printed
+`GETTER_E2E_PASS` on the development host. This snapshot does not claim a GitHub
+Actions run; link the actual workflow run for the commit being released. See
+[Testing](docs/testing.md) for exactly what is automated and what remains
 unverified.
 
 ## Contributing

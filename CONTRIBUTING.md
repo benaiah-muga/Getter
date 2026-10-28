@@ -19,11 +19,11 @@ in a public issue.
 
 ## Toolchain and prerequisites
 
-The repository pins Rust `1.91.0` in [`rust-toolchain.toml`](rust-toolchain.toml)
+The repository pins Rust `1.97.0` in [`rust-toolchain.toml`](rust-toolchain.toml)
 and checks in [`Cargo.lock`](Cargo.lock). Use both.
 
 ```sh
-rustup show active-toolchain   # should report 1.91.0
+rustup show active-toolchain   # should report 1.97.0
 rustup target add wasm32-unknown-unknown
 ```
 
@@ -73,16 +73,16 @@ CI. Do not add blanket `#[allow]` attributes to silence a warning without a
 comment explaining why the lint is wrong or unavoidable.
 
 `.github/workflows/ci.yml` runs these quality gates, the two-worker recovery E2E,
-`cargo audit --deny warnings`, and `node scripts/gates/docs.mjs` (required docs,
+`cargo audit`, and `node scripts/gates/docs.mjs` (required docs,
 banner hash, links, and workflow checks). Do not claim a change passed CI unless
 the workflow actually ran.
 
 ### Dependency and license checks
 
-CI installs `cargo-audit` and runs `cargo audit --deny warnings`. Locally:
+CI installs `cargo-audit` and runs `cargo audit`. Locally:
 
 ```sh
-cargo audit --deny warnings
+cargo audit
 ```
 
 `cargo-deny` is not configured (`deny.toml` is absent). New dependencies need

@@ -17,7 +17,7 @@ job-format, and workload-ABI version identifiers are versioned separately.
   bearer-token control API, signed requests using Ed25519 identity keys,
   configurable niceness, battery-discharge pausing on Linux, and per-worker
   resource ceilings.
-- Capability-free Wasmtime 43 execution sandbox with fuel metering, wall-clock
+- Capability-free Wasmtime 49.0.4 execution sandbox with fuel metering, wall-clock
   cancellation, memory/table/instance limits, output bounds, module size limits,
   and a strict no-imports rule.
 - `getter.abi.v1` workload ABI, authoring SDK (`getter-workload-sdk`), the
@@ -36,7 +36,7 @@ job-format, and workload-ABI version identifiers are versioned separately.
   workers, loopback-only worker control, one-time expiring pairing tokens, and
   owner-only local state on Unix.
 - `sum-squares` example with 12 tasks over 12,000,000 values, checked-in Wasm
-  artifact (`sha256:73bd35d33ba5047a32416f5049905df38ca5e008eef67333ca05a00775aa13e1`),
+  artifact (`sha256:853269c113a222f5229bd5ce245ebe668d1c2978dc047554d8748e9e2246930e`),
   trusted per-task hashes, and expected aggregate
   `575999928000002000000`.
 - Architecture, protocol, workload, configuration, local-network, security,
@@ -75,8 +75,9 @@ job-format, and workload-ABI version identifiers are versioned separately.
 - LAN discovery is unauthenticated and grants no trust.
 - Battery pausing is Linux-only; idle-user detection and bandwidth shaping are
   not implemented.
-- CI and the multi-process kill/restart E2E workflow exist, but no run result is
-  claimed in this snapshot; see [Testing](docs/testing.md).
+- CI and the multi-process kill/restart E2E workflow exist. The local E2E passed
+  on the development host; no GitHub Actions run is claimed for this snapshot.
+  See [Testing](docs/testing.md).
 - Physical separate-machine LAN deployment is a documented procedure that has
   not been verified on physical hardware in this environment.
 
