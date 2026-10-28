@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: "Security vulnerability"
+    url: "https://github.com/benaiah-muga/Getter/security/advisories/new"
+    about: "Report suspected vulnerabilities privately. Do not open a public issue with exploit details."
+  - name: "Documentation"
+    url: "https://github.com/benaiah-muga/Getter/tree/main/docs"
+    about: "Read the architecture, protocol, workload, configuration, security, and operations guides."
+  - name: "Questions and setup help"
+    url: "https://github.com/benaiah-muga/Getter/issues"
+    about: "Open an issue with sanitized configuration and logs if the documentation does not answer your question."

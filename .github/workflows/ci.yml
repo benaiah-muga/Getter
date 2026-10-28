@@ -1,0 +1,94 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: "1"
+
+jobs:
+  quality:
+    name: Format, lint, and tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: 1.91.0
+          components: rustfmt, clippy
+          targets: wasm32-unknown-unknown
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: ". -> target"
+      - name: Formatting
+        run: cargo fmt --all -- --check
+      - name: Clippy
+        run: cargo clippy --locked --workspace --all-targets -- -D warnings
+      - name: Workspace tests
+        run: cargo test --locked --workspace --all-targets
+      - name: Workload build and trusted reference generation
+        run: |
+          ./scripts/build-example.sh
+          python3 examples/sum-squares/generate_job.py --out /tmp/getter-example-job.json
+          python3 - <<'PY'
+          import json
+          data = json.load(open('/tmp/getter-example-job.json', encoding='utf-8'))
+          assert data['protocol'] == 'getter.job/v1'
+          assert data['aggregation'] == {'mode': 'json_sum', 'field': 'value'}
+          assert data['expected_aggregate'] == {'total': '575999928000002000000'}
+          assert len(data['tasks']) == 12
+          print('workload job generation verified')
+          PY
+
+  e2e:
+    name: Two-worker recovery E2E
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: 1.91.0
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: ". -> target"
+      - name: Build release binary
+        run: cargo build --locked -p getter-cli --release
+      - name: Run full local demonstration
+        run: GETTER_BIN="$PWD/target/release/getter" bash scripts/e2e-local.sh
+
+  dependency-audit:
+    name: Dependency advisory audit
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: 1.91.0
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-audit
+      - name: cargo audit
+        run: cargo audit
+
+  docs:
+    name: Documentation checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Documentation and banner checks
+        run: node scripts/gates/docs.mjs

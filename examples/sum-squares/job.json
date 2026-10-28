@@ -1,0 +1,92 @@
+{
+  "protocol": "getter.job/v1",
+  "name": "sum-of-squares",
+  "description": "Partitioned sum of squares over [0, 12000000) computed by the sum-squares reference workload.",
+  "workload": {
+    "name": "sum-of-squares",
+    "abi": "getter.abi.v1",
+    "sha256": "73bd35d33ba5047a32416f5049905df38ca5e008eef67333ca05a00775aa13e1",
+    "artifact": "sum_squares.wasm"
+  },
+  "tasks": [
+    {
+      "id": "task-000",
+      "input": "0:1000000",
+      "expected_output_sha256": "0a1e85ea7627d4b4176620760ab048abca42cccb58ed22593b9eac8b4ef1b851"
+    },
+    {
+      "id": "task-001",
+      "input": "1000000:2000000",
+      "expected_output_sha256": "5086aa8cbd0a595526e1a4081b87b14a71c2984872cb40d584741e75c828746c"
+    },
+    {
+      "id": "task-002",
+      "input": "2000000:3000000",
+      "expected_output_sha256": "b2aaf83214a16e2014e82d893752eeb5dc42be75320b8ebad95edfb08cda3ba8"
+    },
+    {
+      "id": "task-003",
+      "input": "3000000:4000000",
+      "expected_output_sha256": "6f0411f94248f7e75ba364342c95d2a3299813534a9c8b6bde0c85a59632e233"
+    },
+    {
+      "id": "task-004",
+      "input": "4000000:5000000",
+      "expected_output_sha256": "8c9645a9532d1a33e20662d84d411a05fdafa4d8b8d2b1bbfa26907454d7dba6"
+    },
+    {
+      "id": "task-005",
+      "input": "5000000:6000000",
+      "expected_output_sha256": "f689565ff30dbb92265128bd36c979e7833b66ba63a2868302a79c03826b8edc"
+    },
+    {
+      "id": "task-006",
+      "input": "6000000:7000000",
+      "expected_output_sha256": "7f109c69a12417864114d63c65cb7a4a28d650296cf503e297012cf1df96f595"
+    },
+    {
+      "id": "task-007",
+      "input": "7000000:8000000",
+      "expected_output_sha256": "30832ba93bc7a14f3263602ea8c7b0b9936ac93c33a9a18f7191845428813d48"
+    },
+    {
+      "id": "task-008",
+      "input": "8000000:9000000",
+      "expected_output_sha256": "eefa51f258c9c01ea53ae9b9f1bd1ffdffa9a0f0846752a196c13d31a0a7d532"
+    },
+    {
+      "id": "task-009",
+      "input": "9000000:10000000",
+      "expected_output_sha256": "acd9f063460744722489582bce6b3da577f768cf20f1009d559a716c1da58018"
+    },
+    {
+      "id": "task-010",
+      "input": "10000000:11000000",
+      "expected_output_sha256": "3552834be4cb3b9987fca5710361c475c7c452649b99c386a041ad7966f78b1a"
+    },
+    {
+      "id": "task-011",
+      "input": "11000000:12000000",
+      "expected_output_sha256": "3fdbe4d4391bd4c4b0f54179484a15fbd4f2c8cdbf657621a6018869567c846c"
+    }
+  ],
+  "requirements": {
+    "cpu_slots": 1,
+    "memory_bytes": 67108864,
+    "timeout_secs": 10,
+    "output_bytes": 1048576,
+    "fuel": 5000000000
+  },
+  "verification": {
+    "mode": "exact_sha256"
+  },
+  "aggregation": {
+    "mode": "json_sum",
+    "field": "value"
+  },
+  "expected_aggregate": {
+    "total": "575999928000002000000"
+  },
+  "max_attempts": 3,
+  "lease_seconds": 20
+}

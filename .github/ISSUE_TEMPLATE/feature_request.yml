@@ -1,0 +1,82 @@
+name: Feature request
+description: Propose a capability or design change
+title: "feat: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Getter is alpha and intentionally small. Proposals that add host
+        capabilities, weaken verification, or change the protocol, job format,
+        or ABI need a compatibility and security discussion before code.
+
+        Read the [limitations](https://github.com/benaiah-muga/Getter/blob/main/docs/limitations.md)
+        and [architecture](https://github.com/benaiah-muga/Getter/blob/main/docs/architecture.md)
+        first.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What user problem does this solve? Who experiences it, and how often?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Describe the behavior, CLI/config surface, and failure modes.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Include workarounds using the current system.
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Coordinator / scheduling
+        - Worker / capacity controls
+        - Runtime / sandbox
+        - Protocol / API
+        - Storage / recovery
+        - CLI / UX
+        - Workload SDK / ABI
+        - Verification / aggregation
+        - Networking / discovery
+        - Documentation
+        - Build / release
+    validations:
+      required: true
+
+  - type: textarea
+    id: security
+    attributes:
+      label: Security and compatibility impact
+      description: |
+        Does this add imports or host access to workloads, change trust
+        boundaries, affect at-least-once semantics, or require a protocol/job/ABI
+        version bump? If unsure, say so.
+    validations:
+      required: true
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope and non-goals
+      description: What is the smallest useful version, and what should explicitly stay out?
+
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: Confirmations
+      options:
+        - label: I searched existing issues and documentation for this idea.
+          required: true
+        - label: I understand this is a volunteer project and the proposal may be deferred or declined.
+          required: true

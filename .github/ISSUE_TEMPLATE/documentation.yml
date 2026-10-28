@@ -1,0 +1,50 @@
+name: Documentation issue
+description: Report missing, incorrect, or broken documentation
+title: "docs: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Documentation must be accurate and honest about what is verified. If a
+        command, flag, config field, endpoint, or status claim is wrong, please
+        say exactly where.
+
+  - type: input
+    id: location
+    attributes:
+      label: Location
+      description: File and heading, or a URL.
+      placeholder: "docs/local-network.md, section 'Firewall'"
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What is wrong or missing?
+      description: Quote the current text if useful. Explain what you expected instead.
+    validations:
+      required: true
+
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Suggested correction
+      description: Include exact commands or text when possible. Do not include secrets.
+
+  - type: input
+    id: version
+    attributes:
+      label: Getter version or commit
+      description: If the documentation drift depends on the code revision.
+      placeholder: "commit abc1234"
+
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: Confirmations
+      options:
+        - label: I checked the current documentation and this is not already reported.
+          required: true
+        - label: This report contains no secrets or private data.
+          required: true

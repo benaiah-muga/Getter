@@ -1,0 +1,11 @@
+Getter
+Copyright 2026 The Getter contributors
+
+Getter is licensed under the Apache License, Version 2.0. See LICENSE for the
+full license text.
+
+This distribution does not vendor third-party source code. Rust dependencies
+declared in Cargo.toml and locked in Cargo.lock remain under their own licenses;
+redistributors should preserve the license and notice material that applies to
+those dependencies and to the Rust standard library components compiled into a
+binary.

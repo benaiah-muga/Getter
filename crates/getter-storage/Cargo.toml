@@ -1,0 +1,29 @@
+[package]
+name = "getter-storage"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+homepage.workspace = true
+description = "SQLite persistence, migrations, leases, and audit state for Getter"
+
+[dependencies]
+chrono.workspace = true
+getter-core = { path = "../getter-core" }
+getter-protocol = { path = "../getter-protocol" }
+rusqlite.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+sha2.workspace = true
+thiserror.workspace = true
+tracing = "0.1"
+uuid.workspace = true
+
+[dev-dependencies]
+hex = "0.4"
+tempfile.workspace = true
+
+[lints]
+workspace = true

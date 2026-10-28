@@ -1,0 +1,20 @@
+[package]
+name = "getter-protocol"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+homepage.workspace = true
+description = "Stable wire protocol and public data formats for Getter"
+
+[dependencies]
+base64.workspace = true
+chrono.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+uuid.workspace = true
+
+[lints]
+workspace = true

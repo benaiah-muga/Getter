@@ -1,0 +1,37 @@
+[package]
+name = "getter-cli"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+homepage.workspace = true
+description = "Command-line interface for the Getter distributed computing engine"
+
+[[bin]]
+name = "getter"
+path = "src/main.rs"
+
+[dependencies]
+anyhow.workspace = true
+base64.workspace = true
+chrono.workspace = true
+clap.workspace = true
+getter-coordinator = { path = "../getter-coordinator" }
+getter-core = { path = "../getter-core" }
+getter-protocol = { path = "../getter-protocol" }
+getter-worker = { path = "../getter-worker" }
+hex = "0.4"
+reqwest.workspace = true
+rustls.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+sha2.workspace = true
+tokio.workspace = true
+toml.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+
+[lints]
+workspace = true

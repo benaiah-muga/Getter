@@ -1,0 +1,23 @@
+[package]
+name = "getter-runtime"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+homepage.workspace = true
+description = "Capability-free Wasmtime sandbox for Getter workloads"
+
+[dependencies]
+getter-protocol = { path = "../getter-protocol" }
+sha2.workspace = true
+thiserror.workspace = true
+tracing = "0.1"
+wasmtime.workspace = true
+
+[dev-dependencies]
+wat.workspace = true
+
+[lints]
+workspace = true

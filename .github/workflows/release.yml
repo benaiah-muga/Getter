@@ -1,0 +1,87 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  id-token: write
+  attestations: write
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: "1"
+
+jobs:
+  release:
+    name: Build and attest Linux release
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: 1.91.0
+          components: rustfmt, clippy
+          targets: wasm32-unknown-unknown
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: ". -> target"
+      - name: Verify the exact release commit
+        run: |
+          cargo fmt --all -- --check
+          cargo clippy --locked --workspace --all-targets -- -D warnings
+          cargo test --locked --workspace --all-targets
+      - name: Build release binary
+        run: cargo build --locked --release -p getter-cli
+      - name: Build and verify the reference workload
+        run: |
+          ./scripts/build-example.sh
+          python3 examples/sum-squares/generate_job.py --out /tmp/getter-example-job.json
+          python3 - <<'PY'
+          import json
+          d = json.load(open('/tmp/getter-example-job.json', encoding='utf-8'))
+          assert d['expected_aggregate'] == {'total': '575999928000002000000'}
+          print('reference workload verified')
+          PY
+      - name: Package release
+        run: |
+          set -euo pipefail
+          version=${GITHUB_REF_NAME#v}
+          name="getter-${version}-x86_64-unknown-linux-gnu"
+          mkdir -p "dist/${name}"
+          install -m 0755 target/release/getter "dist/${name}/getter"
+          install -m 0644 README.md LICENSE NOTICE CHANGELOG.md "dist/${name}/"
+          install -m 0644 examples/sum-squares/sum_squares.wasm "dist/${name}/"
+          (cd dist && tar -czf "${name}.tar.gz" "${name}")
+          (cd dist && sha256sum "${name}.tar.gz" > "${name}.tar.gz.sha256")
+          cat "dist/${name}.tar.gz.sha256"
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: "dist/*.tar.gz"
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: getter-linux-x86_64
+          path: |
+            dist/*.tar.gz
+            dist/*.sha256
+      - name: Publish GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            gh release upload "$GITHUB_REF_NAME" dist/*.tar.gz dist/*.sha256 --clobber
+          else
+            gh release create "$GITHUB_REF_NAME" dist/*.tar.gz dist/*.sha256 \
+              --title "Getter ${GITHUB_REF_NAME}" \
+              --notes "See CHANGELOG.md and the provenance attestations for this release." \
+              --verify-tag
+          fi

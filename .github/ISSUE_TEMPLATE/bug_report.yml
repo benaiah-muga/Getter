@@ -1,0 +1,114 @@
+name: Bug report
+description: Report a reproducible defect in Getter
+title: "bug: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug. Remove secrets, pairing tokens, private keys,
+        control/admin tokens, and production job data before posting.
+
+        **Security issues must be reported privately** through
+        https://github.com/benaiah-muga/Getter/security/advisories/new, not here.
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component
+      description: Which part of Getter is affected?
+      options:
+        - Coordinator
+        - Worker
+        - Wasm runtime / sandbox
+        - Protocol or HTTP API
+        - Storage / SQLite
+        - CLI
+        - Workload SDK
+        - sum-squares example
+        - Documentation
+        - Build / packaging / CI
+        - Not sure
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Getter version or commit
+      description: Output of `getter --version`, plus the commit if you built from source.
+      placeholder: "getter 0.1.0 (commit abc1234)"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: deployment
+    attributes:
+      label: Deployment
+      description: How is Getter running?
+      options:
+        - One host, loopback only
+        - Multiple hosts on a LAN
+        - TLS enabled
+        - TLS disabled (development only)
+        - Container or VM
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Use exact commands and sanitized configuration. A minimal reproduction is best.
+      placeholder: |
+        1. ...
+        2. ...
+        3. ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: Include error messages, exit codes, and whether the problem is deterministic.
+    validations:
+      required: true
+
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: Sanitized diagnostics
+      description: |
+        Paste relevant output from `getter doctor`, `getter status`, `getter jobs inspect`,
+        or service logs. Set `RUST_LOG=debug` for more detail. Redact tokens, keys,
+        fingerprints if sensitive in your environment, and job payloads.
+      render: shell
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, architecture, Rust version, filesystem, service manager, and worker count.
+      placeholder: "Ubuntu 24.04 x86_64, Rust 1.91.0, systemd user service, 2 workers"
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: Confirmations
+      options:
+        - label: I removed secrets and private data from this report.
+          required: true
+        - label: This is not a security vulnerability, or I have reported it privately instead.
+          required: true
+        - label: I searched existing issues for a duplicate.
+          required: true

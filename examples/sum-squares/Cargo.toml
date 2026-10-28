@@ -1,0 +1,29 @@
+[package]
+name = "sum-squares"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.91"
+license = "Apache-2.0"
+authors = ["Getter contributors"]
+repository = "https://github.com/benaiah-muga/Getter"
+homepage = "https://github.com/benaiah-muga/Getter"
+description = "Deterministic partitioned sum-of-squares example workload for Getter"
+publish = false
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+getter-workload-sdk = { path = "../../crates/getter-workload-sdk" }
+
+# The example is intentionally a standalone package: the root workspace excludes
+# it so it can be built as a cdylib for wasm32-unknown-unknown without pulling
+# the coordinator, worker, or CLI into its dependency graph.
+[workspace]
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+panic = "abort"
+strip = true
